@@ -8,30 +8,41 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.internal.*
 import kotlin.coroutines.*
+import kotlin.coroutines.intrinsics.*
 
 internal class SafeCollector<T>(
     private val collector: FlowCollector<T>,
     private val collectContext: CoroutineContext
-) : FlowCollector<T> {
+) : FlowCollector<T>, Continuation<Unit> {
 
     // Note, it is non-capturing lambda, so no extra allocation during init of SafeCollector
     private val collectContextSize = collectContext.fold(0) { count, _ -> count + 1 }
     private var lastEmissionContext: CoroutineContext? = null
-
-    override suspend fun emit(value: T)  {
-        /*
-         * Benign data-race here:
-         * We read potentially racy published coroutineContext, but we only use it for
-         * referential comparison (=> thus safe) and are not using it for structural comparisons.
-         */
-        val currentContext = coroutineContext
-        // This check is triggered once per flow on happy path.
-        if (lastEmissionContext !== currentContext) {
-            checkContext(currentContext)
-            lastEmissionContext = currentContext
-        }
-        collector.emit(value) // TCE
+    private val emitFun = run {
+        val suspendFun: suspend (T) -> Unit = { collector.emit(it) }
+        suspendFun as Function2<T, Continuation<Unit>, Any?>
     }
+
+    private var caller: Continuation<Unit>? = null // lateinit
+
+    override val context: CoroutineContext
+        get() = caller?.context ?: EmptyCoroutineContext
+
+    override fun resumeWith(result: Result<Unit>) {
+        val completion = caller!!
+        completion.resumeWith(result)
+    }
+//
+    override suspend fun emit(value: T): Unit = suspendCoroutineUninterceptedOrReturn<Unit> sc@{
+        caller = it
+        emitFun(value, this)
+    }
+
+
+//    override suspend fun emit(value: T): Unit {
+//        collector.emit(value)
+////        emitFun(value, this)
+//    }
 
     private fun checkContext(currentContext: CoroutineContext) {
         val result = currentContext.fold(0) fold@{ count, element ->

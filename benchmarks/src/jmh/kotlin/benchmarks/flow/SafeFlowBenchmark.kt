@@ -7,7 +7,7 @@ package benchmarks.flow
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.openjdk.jmh.annotations.*
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 import benchmarks.flow.scrabble.flow as unsafeFlow
 import kotlinx.coroutines.flow.flow as safeFlow
 
@@ -23,7 +23,7 @@ open class SafeFlowBenchmark {
         for (i in 2L..1000L) emit(i)
     }
 
-    private fun numbersUnsafe() = unsafeFlow {
+    private fun numbersUnsafe(): Flow<Long> = unsafeFlow {
         for (i in 2L..1000L) emit(i)
     }
 
@@ -37,3 +37,4 @@ open class SafeFlowBenchmark {
         numbersUnsafe().count()
     }
 }
+

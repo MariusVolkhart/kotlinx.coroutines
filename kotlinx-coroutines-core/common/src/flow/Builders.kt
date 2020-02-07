@@ -46,7 +46,9 @@ import kotlin.jvm.*
  * ```
  * If you want to switch the context of execution of a flow, use the [flowOn] operator.
  */
-public fun <T> flow(@BuilderInference block: suspend FlowCollector<T>.() -> Unit): Flow<T> = SafeFlow(block)
+public fun <T> flow(@BuilderInference block: suspend FlowCollector<T>.() -> Unit): Flow<T> = flow {
+    SafeCollector(this, coroutineContext).block()
+}
 
 // Named anonymous object
 private class SafeFlow<T>(private val block: suspend FlowCollector<T>.() -> Unit) : Flow<T> {
