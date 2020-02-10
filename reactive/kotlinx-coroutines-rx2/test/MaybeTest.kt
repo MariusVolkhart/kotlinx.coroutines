@@ -10,7 +10,6 @@ import io.reactivex.exceptions.*
 import io.reactivex.functions.*
 import io.reactivex.internal.functions.Functions.*
 import kotlinx.coroutines.*
-import org.hamcrest.core.*
 import org.junit.*
 import org.junit.Assert.*
 import java.util.concurrent.*
@@ -32,7 +31,7 @@ class MaybeTest : TestBase() {
         expect(2)
         maybe.subscribe { value ->
             expect(5)
-            assertThat(value, IsEqual("OK"))
+            assertEquals("OK", value)
         }
         expect(3)
         yield() // to started coroutine
@@ -67,8 +66,8 @@ class MaybeTest : TestBase() {
             expectUnreached()
         }, { error ->
             expect(5)
-            assertThat(error, IsInstanceOf(RuntimeException::class.java))
-            assertThat(error.message, IsEqual("OK"))
+            assert(error is RuntimeException)
+            assertEquals("OK", error.message)
         })
         expect(3)
         yield() // to started coroutine

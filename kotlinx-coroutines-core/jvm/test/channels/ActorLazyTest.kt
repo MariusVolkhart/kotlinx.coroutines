@@ -5,7 +5,6 @@
 package kotlinx.coroutines.channels
 
 import kotlinx.coroutines.*
-import org.hamcrest.core.*
 import org.junit.*
 import org.junit.Assert.*
 
@@ -17,22 +16,22 @@ class ActorLazyTest : TestBase() {
             expect(5)
         }
         actor as Job // type assertion
-        assertThat(actor.isActive, IsEqual(false))
-        assertThat(actor.isCompleted, IsEqual(false))
-        assertThat(actor.isClosedForSend, IsEqual(false))
+        assertEquals(false, actor.isActive)
+        assertEquals(false, actor.isCompleted)
+        assertEquals(false, actor.isClosedForSend)
         expect(2)
         yield() // to actor code --> nothing happens (not started!)
-        assertThat(actor.isActive, IsEqual(false))
-        assertThat(actor.isCompleted, IsEqual(false))
-        assertThat(actor.isClosedForSend, IsEqual(false))
+        assertEquals(false, actor.isActive)
+        assertEquals(false, actor.isCompleted)
+        assertEquals(false, actor.isClosedForSend)
         expect(3)
         // start actor explicitly
         actor.start()
         expect(4)
         yield() // to started actor
-        assertThat(actor.isActive, IsEqual(false))
-        assertThat(actor.isCompleted, IsEqual(true))
-        assertThat(actor.isClosedForSend, IsEqual(true))
+        assertEquals(false, actor.isActive)
+        assertEquals(true, actor.isCompleted)
+        assertEquals(true, actor.isClosedForSend)
         finish(6)
     }
 
@@ -41,24 +40,24 @@ class ActorLazyTest : TestBase() {
         expect(1)
         val actor = actor<String>(start = CoroutineStart.LAZY) {
             expect(4)
-            assertThat(receive(), IsEqual("OK"))
+            assertEquals("OK", receive())
             expect(5)
         }
         actor as Job // type assertion
-        assertThat(actor.isActive, IsEqual(false))
-        assertThat(actor.isCompleted, IsEqual(false))
-        assertThat(actor.isClosedForSend, IsEqual(false))
+        assertEquals(false, actor.isActive)
+        assertEquals(false, actor.isCompleted)
+        assertEquals(false, actor.isClosedForSend)
         expect(2)
         yield() // to actor code --> nothing happens (not started!)
-        assertThat(actor.isActive, IsEqual(false))
-        assertThat(actor.isCompleted, IsEqual(false))
-        assertThat(actor.isClosedForSend, IsEqual(false))
+        assertEquals(false, actor.isActive)
+        assertEquals(false, actor.isCompleted)
+        assertEquals(false, actor.isClosedForSend)
         expect(3)
         // send message to actor --> should start it
         actor.send("OK")
-        assertThat(actor.isActive, IsEqual(false))
-        assertThat(actor.isCompleted, IsEqual(true))
-        assertThat(actor.isClosedForSend, IsEqual(true))
+        assertEquals(false, actor.isActive)
+        assertEquals(true, actor.isCompleted)
+        assertEquals(true, actor.isClosedForSend)
         finish(6)
     }
 

@@ -6,7 +6,6 @@ package kotlinx.coroutines.future
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.CancellationException
-import org.hamcrest.core.*
 import org.junit.*
 import org.junit.Assert.*
 import java.util.concurrent.*
@@ -30,7 +29,7 @@ class FutureTest : TestBase() {
                 "O"
             }.await() + "K"
         }
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -40,7 +39,7 @@ class FutureTest : TestBase() {
         val future = GlobalScope.future {
             toAwait.await() + "K"
         }
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -51,7 +50,7 @@ class FutureTest : TestBase() {
         val future = GlobalScope.future {
             toAwait.await() + "K"
         }
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -62,7 +61,7 @@ class FutureTest : TestBase() {
         }
         assertFalse(future.isDone)
         toAwait.complete("O")
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -74,7 +73,7 @@ class FutureTest : TestBase() {
         }
         assertFalse(future.isDone)
         completable.complete("O")
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -88,7 +87,7 @@ class FutureTest : TestBase() {
                 e.message!!
             } + "K"
         }
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -104,7 +103,7 @@ class FutureTest : TestBase() {
                 e.message!!
             } + "K"
         }
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -125,7 +124,7 @@ class FutureTest : TestBase() {
         assertFalse(future.isDone)
         toAwait.completeExceptionally(TestException("O"))
         yield() // to future coroutine
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
         finish(5)
     }
 
@@ -142,7 +141,7 @@ class FutureTest : TestBase() {
         }
         assertFalse(future.isDone)
         completable.completeExceptionally(TestException("O"))
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test
@@ -158,7 +157,7 @@ class FutureTest : TestBase() {
             fail("'get' should've throw an exception")
         } catch (e: ExecutionException) {
             assertTrue(e.cause is IllegalStateException)
-            assertThat(e.cause!!.message, IsEqual("OK"))
+            assertEquals("OK", e.cause!!.message)
         }
     }
 
@@ -206,7 +205,7 @@ class FutureTest : TestBase() {
             }.await()
             result
         }
-        assertThat(future.get(), IsEqual("OK"))
+        assertEquals("OK", future.get())
     }
 
     @Test

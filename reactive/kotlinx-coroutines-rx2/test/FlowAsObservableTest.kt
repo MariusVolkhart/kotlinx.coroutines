@@ -6,7 +6,6 @@ package kotlinx.coroutines.rx2
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import org.hamcrest.core.*
 import org.junit.*
 import org.junit.Assert.*
 
@@ -39,7 +38,7 @@ class FlowAsObservableTest : TestBase() {
         expect(2)
         observable.subscribe({ expectUnreached() }, { error ->
             expect(4)
-            assertThat(error, IsInstanceOf(RuntimeException::class.java))
+            assert(error is RuntimeException)
             assertEquals("OK", error.message)
         })
         finish(5)

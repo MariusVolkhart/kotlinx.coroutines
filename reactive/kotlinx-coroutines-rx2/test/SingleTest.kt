@@ -9,7 +9,6 @@ import io.reactivex.disposables.*
 import io.reactivex.exceptions.*
 import io.reactivex.functions.*
 import kotlinx.coroutines.*
-import org.hamcrest.core.*
 import org.junit.*
 import org.junit.Assert.*
 import java.util.concurrent.*
@@ -30,7 +29,7 @@ class SingleTest : TestBase() {
         expect(2)
         single.subscribe { value ->
             expect(5)
-            assertThat(value, IsEqual("OK"))
+            assertEquals("OK", value)
         }
         expect(3)
         yield() // to started coroutine
@@ -49,8 +48,8 @@ class SingleTest : TestBase() {
             expectUnreached()
         }, { error ->
             expect(5)
-            assertThat(error, IsInstanceOf(RuntimeException::class.java))
-            assertThat(error.message, IsEqual("OK"))
+            assert(error is RuntimeException)
+            assertEquals("OK", error.message)
         })
         expect(3)
         yield() // to started coroutine
